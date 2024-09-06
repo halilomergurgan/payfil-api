@@ -6,6 +6,7 @@ use App\Exceptions\PaymentException;
 use App\Exceptions\ValidateCardException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProcessPaymentRequest;
+use App\Http\Resources\TransactionResource;
 use App\Jobs\ProcessPaymentJob;
 use App\Models\Transaction;
 use App\Pipelines\OrderPipeline;
@@ -40,6 +41,8 @@ class PaymentController extends Controller
         } catch (ValidateCardException|PaymentException $e) {
             return $e->render($request);
         } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+
             return response()->json(['error' => 'Something went wrong.'], 500);
         }
     }
@@ -53,7 +56,9 @@ class PaymentController extends Controller
     {
         $this->authorize('view', $transaction);
 
-        return response()->json($transaction);
+        $transaction->load('order.products');
+
+        return response()->json(new TransactionResource($transaction));
     }
 
     /**
@@ -65,8 +70,8 @@ class PaymentController extends Controller
     {
         $this->authorize('viewAny', Transaction::class);
 
-        $transactions = Transaction::where('user_id', $request->user()->id)->get();
+        $transactions = Transaction::where('user_id', $request->user()->id)->with('order.products')->get();
 
-        return response()->json($transactions);
+        return response()->json(TransactionResource::collection($transactions));
     }
 }

@@ -19,7 +19,8 @@ class Transaction extends Model
         'status',
         'transaction_id',
         'response_code',
-        'user_id'
+        'user_id',
+        'order_id'
     ];
 
     /**
@@ -28,5 +29,13 @@ class Transaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
     }
 }

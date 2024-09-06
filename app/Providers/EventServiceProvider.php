@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use App\Events\PaymentCompleted;
+use App\Events\PaymentFailed;
+use App\Events\PaymentProcessing;
+use App\Events\PaymentStarted;
+use App\Listeners\PaymentLogListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -15,8 +17,17 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
+        PaymentStarted::class => [
+            PaymentLogListener::class,
+        ],
+        PaymentProcessing::class => [
+            PaymentLogListener::class,
+        ],
+        PaymentCompleted::class => [
+            PaymentLogListener::class,
+        ],
+        PaymentFailed::class => [
+            PaymentLogListener::class,
         ],
     ];
 
@@ -25,7 +36,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        parent::boot();
     }
 
     /**

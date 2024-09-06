@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PaymentController;
-use Illuminate\Http\Request;
+use App\Http\API\v1\Controllers\AuthController;
+use App\Http\API\v1\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,10 +14,18 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::get('/logout', [AuthController::class, 'logout']);
-    Route::post('/process-payment', [PaymentController::class, 'processPayment']);
+Route::prefix('v1')->group(function () {
+
+    Route::post('login', [AuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        #auth
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::get('/logout', [AuthController::class, 'logout']);
+        #payment and transactions
+        Route::post('/process-payment', [PaymentController::class, 'processPayment']);
+        Route::get('transaction/{transaction}', [PaymentController::class, 'transaction']);
+        Route::get('transactions', [PaymentController::class, 'transactions']);
+    });
 });

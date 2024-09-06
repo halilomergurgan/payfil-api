@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use App\Services\Payment\PaymentService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,11 +18,13 @@ class ProcessPaymentJob implements ShouldQueue
 
     protected $paymentData;
     protected $provider;
+    protected $user;
 
-    public function __construct($paymentData, $provider)
+    public function __construct($paymentData, $provider, User $user)
     {
         $this->paymentData = $paymentData;
         $this->provider = $provider;
+        $this->user = $user;
     }
 
     /**
@@ -40,6 +43,7 @@ class ProcessPaymentJob implements ShouldQueue
             Transaction::create([
                 'full_name' => $this->paymentData['fullName'],
                 'card_number' => $maskedCardNumber,
+                'user_id' => $this->user->id,
                 'amount' => $this->paymentData['amount'],
                 'currency' => $this->paymentData['currency'],
                 'provider' => get_class($this->provider),
@@ -52,6 +56,7 @@ class ProcessPaymentJob implements ShouldQueue
             Transaction::create([
                 'full_name' => $this->paymentData['fullName'],
                 'card_number' => $maskedCardNumber,
+                'user_id' => $this->user->id,
                 'amount' => $this->paymentData['amount'],
                 'currency' => $this->paymentData['currency'],
                 'provider' => get_class($this->provider),

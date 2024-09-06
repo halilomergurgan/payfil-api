@@ -29,7 +29,6 @@ class ProcessPaymentJob implements ShouldQueue
      */
     public function handle(PaymentService $paymentService)
     {
-        \Log::error($this->paymentData['fullName']. 'ismi buuu');
         $maskedCardNumber = substr($this->paymentData['cardNumber'], -4);
         $maskedCardNumber = '**** **** **** ' . $maskedCardNumber;
 

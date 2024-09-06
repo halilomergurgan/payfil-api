@@ -28,6 +28,9 @@ class ProcessPaymentRequest extends FormRequest
             'cvv' => 'required|digits_between:3,4',
             'amount' => 'required|numeric|min:0.01',
             'currency' => 'required|string|in:USD,EUR,TRY',
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|integer|exists:products,id',
+            'products.*.quantity' => 'required|integer|min:1',
         ];
     }
 
@@ -46,6 +49,11 @@ class ProcessPaymentRequest extends FormRequest
             'amount.min' => 'Tutar pozitif olmalıdır.',
             'currency.required' => 'Para birimi gereklidir.',
             'currency.in' => 'Geçerli bir para birimi seçilmelidir (USD, EUR, TRY).',
+            'products.required' => 'En az bir ürün gereklidir.',
+            'products.*.product_id.required' => 'Ürün ID gereklidir.',
+            'products.*.product_id.exists' => 'Ürün veritabanında mevcut olmalıdır.',
+            'products.*.quantity.required' => 'Ürün miktarı gereklidir.',
+            'products.*.quantity.min' => 'Ürün miktarı en az 1 olmalıdır.',
         ];
     }
 }

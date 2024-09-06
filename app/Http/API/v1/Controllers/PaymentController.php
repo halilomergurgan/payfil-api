@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProcessPaymentRequest;
 use App\Jobs\ProcessPaymentJob;
 use App\Models\Transaction;
+use App\Pipelines\OrderPipeline;
 use App\Pipelines\ProcessPayment;
 use App\Pipelines\SelectBank;
 use App\Pipelines\ValidateCard;
@@ -26,13 +27,14 @@ class PaymentController extends Controller
             $request = app(Pipeline::class)
                 ->send($paymentData)
                 ->through([
+                    OrderPipeline::class,
                     ValidateCard::class,
                     SelectBank::class,
                     ProcessPayment::class,
                 ])
                 ->thenReturn();
 
-            ProcessPaymentJob::dispatch($paymentData, $request['provider'], auth()->user());
+            ProcessPaymentJob::dispatch($paymentData, $request['provider'], auth()->user(), $request['order_id']);
 
             return response()->json(['message' => 'Payment processing started.']);
         } catch (ValidateCardException|PaymentException $e) {

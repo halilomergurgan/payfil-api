@@ -1,4 +1,4 @@
-## Payment Processing API
+## Payfil API
 This project is a payment gateway API that processes payments using valid credit card information, integrates with products, and records transactions. The API is built using Laravel, Dockerized with Laravel Sail, and supports user roles like admin and user.
 
 # Setup Instructions
@@ -11,7 +11,7 @@ Docker installed on your system (you don't need PHP, MySQL, or Composer locally)
 1. Clone the repository
 2. Run the setup script
 ```bash
-   bash setup.sh
+   sh setup.sh
 ```
 This script will:
 

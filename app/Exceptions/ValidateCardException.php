@@ -12,7 +12,7 @@ class ValidateCardException extends Exception
      * @param string $message
      * @param int $code
      */
-    public function __construct(string $message = 'Validate Card failed', int $code = 400)
+    public function __construct(string $message = 'Validate Card failed', int $code = 422)
     {
         parent::__construct($message, $code);
     }

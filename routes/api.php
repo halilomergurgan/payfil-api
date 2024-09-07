@@ -15,17 +15,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::prefix('v1')->group(function () {
 
     Route::post('login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        #auth
-        Route::get('/me', [AuthController::class, 'me']);
-        Route::get('/logout', [AuthController::class, 'logout']);
-        #payment and transactions
-        Route::post('/process-payment', [PaymentController::class, 'processPayment']);
-        Route::get('transaction/{transaction}', [PaymentController::class, 'transaction']);
-        Route::get('transactions', [PaymentController::class, 'transactions']);
+        #If blocked it will not be able to process
+        Route::middleware('check.ip')->group(function () {
+            #auth
+            Route::get('/me', [AuthController::class, 'me']);
+            Route::get('/logout', [AuthController::class, 'logout']);
+            #payment and transactions
+            #throttle check 60 seconds and 10 request
+            Route::middleware('throttle:10,1')->group(function () {
+                Route::post('/process-payment', [PaymentController::class, 'processPayment']);
+            });
+            Route::get('transaction/{transaction}', [PaymentController::class, 'transaction']);
+            Route::get('transactions', [PaymentController::class, 'transactions']);
+        });
     });
 });
+
+

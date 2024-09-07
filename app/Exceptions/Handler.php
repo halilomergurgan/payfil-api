@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -45,6 +46,12 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'error' => 'The requested resource was not found.',
             ], 404);
+        }
+
+        if ($exception instanceof ThrottleRequestsException) {
+            return response()->json([
+                'error' => 'Too many attempts.',
+            ], 429);
         }
 
         return parent::render($request, $exception);

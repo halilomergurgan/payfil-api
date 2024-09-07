@@ -1,66 +1,170 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Payment Processing API
+This project is a payment gateway API that processes payments using valid credit card information, integrates with products, and records transactions. The API is built using Laravel, Dockerized with Laravel Sail, and supports user roles like admin and user.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Setup Instructions
+To set up the project from scratch, you can use the provided setup.sh script. This script will automatically spin up the Docker containers, install dependencies, migrate the database, seed necessary data, and start the queue worker.
 
-## About Laravel
+# Prerequisites
+Docker installed on your system (you don't need PHP, MySQL, or Composer locally).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Setup Process
+1. Clone the repository
+2. Run the setup script
+```bash
+   bash setup.sh
+```
+This script will:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Start Docker containers with MySQL, Redis, and PHP.
+- Install Composer dependencies.
+- Create the .env file if it doesn't already exist.
+- Generate the application key.
+- Run database migrations and seeders.
+- Start the queue worker to handle payment jobs.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+3. After the setup is complete, the application should be running on http://localhost.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## API Documentation
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### POST /api/v1/process-payment
+**Description**: Processes a payment and dispatches it to a queue for further handling. It validates the card and processes the payment with product details.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### Request Body:
 
-## Laravel Sponsors
+```json
+{
+    "cardNumber": "4111111111111111",
+    "expiryDate": "12/25",
+    "cvv": "123",
+    "amount": 100.50,
+    "currency": "USD",
+    "fullName": "John Doe",
+    "products": [
+        {
+            "product_id": 1,
+            "quantity": 2
+        },
+        {
+            "product_id": 3,
+            "quantity": 1
+        }
+    ]
+}
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### Response:
 
-### Premium Partners
+**200 OK**: Payment processing started.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```json
+{
+    "message": "Payment processing started."
+}
+```
+**422 Unprocessable Entity**: Validation error or invalid card.
 
-## Contributing
+```json
+{
+    "error": "Card validation failed."
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**500 Internal Server Error**: Unexpected error during payment processing.
 
-## Code of Conduct
+### Valid Card Numbers
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Card Number       | Description        |
+|-------------------|--------------------|
+| 4111111111111111  | Visa (Valid)       |
+| 5555555555554444  | Mastercard (Valid) |
 
-## Security Vulnerabilities
+### Invalid Card Numbers
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Card Number       | Description        |
+|-------------------|--------------------|
+| 1234567890123456  | Invalid Card       |
+| 0000000000000000  | Invalid Card       |
 
-## License
+### BIN Card Providers and Banks
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| BIN Number | Card Provider | Bank             |
+|------------|---------------|------------------|
+| 411111     | Visa          | Provider Bank 1  |
+| 411112     | Visa          | Provider Bank 1  |
+| 511111     | Mastercard    | Provider  Bank 2 |
+| 511112     | Mastercard    | Provider  Bank 2 |
+| **Others** | Various       | Provider Bank 3  |
+
+### Other API Endpoints
+
+- **GET /api/v1/transactions**: Retrieves a list of transactions for the authenticated user.
+
+- **GET /api/v1/transaction/{id}**: Retrieves details of a specific transaction by ID.
+
+- **POST /api/v1/login**: Authenticates a user and provides a token.
+
+#### Request Body:
+
+```json
+{
+    "email": "admin@example.com",
+    "password": "password"
+}
+```
+#### Response:
+
+```json
+{
+    "token": "your-auth-token"
+}
+```
+- **GET /api/v1/me:**: Retrieves the authenticated user's information.
+
+- **GET /api/v1/logout**: Logs out the user..
+
+### Users and Roles
+
+For testing purposes, the following credentials are available:
+
+#### Admin User:
+- **Email**: `admin@example.com`
+- **Password**: `password`
+
+#### Demo User:
+- **Email**: `demo@example.com`
+- **Password**: `password`
+
+### User Roles:
+- **admin**: Has permission to manage payments and view transactions.
+- **user**: Can only view their own transactions.
+
+### Queue and Jobs
+
+The API uses a queue system to handle payment processing. Once a payment is initiated, the `ProcessPaymentJob` is dispatched to the queue. The `setup.sh` script automatically starts the queue worker during setup.
+
+If you need to manually run the queue worker, use the following command:
+
+```bash
+./vendor/bin/sail artisan queue:work
+```
+
+### Running Tests
+
+The project includes a suite of tests for validating the payment process and user authentication. To run the tests, use the following command:
+
+```bash
+./vendor/bin/sail artisan test
+```
+
+### Technologies Used
+
+The following technologies were used in this project:
+
+- **Laravel 10**: PHP framework for building the API and handling application logic.
+- **PHP 8.2**: The programming language powering the backend.
+- **Docker with Laravel Sail**: A lightweight command-line interface for interacting with Docker.
+- **MySQL**: The database used to store transaction, user, and product data.
+- **Redis**: Used for managing queues and caching.
+- **Spatie Permissions**: A package used for managing roles and permissions in the application.
+

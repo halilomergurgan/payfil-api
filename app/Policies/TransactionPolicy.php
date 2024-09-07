@@ -11,7 +11,7 @@ class TransactionPolicy
      */
     public function view(User $user, Transaction $transaction)
     {
-        return $user->id === $transaction->user_id;
+        return $user->id === $transaction->user_id || $user->hasRole('admin');
     }
 
     /**
@@ -19,7 +19,7 @@ class TransactionPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->hasRole('admin');
     }
 
     /**
@@ -27,7 +27,7 @@ class TransactionPolicy
      */
     public function processPayment(User $user)
     {
-        return true;
+        return $user->hasRole('admin');
     }
 }
 

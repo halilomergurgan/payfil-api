@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -52,6 +53,12 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'error' => 'Too many attempts.',
             ], 429);
+        }
+
+        if ($exception instanceof UnauthorizedException) {
+            return response()->json([
+                'error' => 'User does not have the right roles.',
+            ], 403);
         }
 
         return parent::render($request, $exception);

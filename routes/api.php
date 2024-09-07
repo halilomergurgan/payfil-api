@@ -28,7 +28,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/logout', [AuthController::class, 'logout']);
             #payment and transactions
             #throttle check 60 seconds and 10 request
-            Route::middleware('throttle:10,1')->group(function () {
+            Route::middleware(['throttle:10,1', 'role:admin'])->group(function () {
                 Route::post('/process-payment', [PaymentController::class, 'processPayment']);
             });
             Route::get('transaction/{transaction}', [PaymentController::class, 'transaction']);

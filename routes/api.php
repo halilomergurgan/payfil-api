@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
             Route::middleware(['throttle:10,1', 'role:admin'])->group(function () {
                 Route::post('/process-payment', [PaymentController::class, 'processPayment']);
             });
-            route::get('/order-status/{order}', [OrderController::class, 'getOrderStatus']);
+            route::get('/order-status/{uuid}', [OrderController::class, 'getOrderStatus']);
             Route::get('transaction/{transaction}', [TransactionController::class, 'transaction']);
             Route::get('transactions', [TransactionController::class, 'transactions']);
         });

@@ -19,6 +19,7 @@ class TransactionResource extends JsonResource
             'user_id' => $this->user_id,
             'order' => $this->order ? [
                 'id' => $this->order->id,
+                'uuid' => $this->order->uuid,
                 'status' => $this->order->status,
                 'total_amount' => $this->order->total_amount,
                 'created_at' => $this->order->created_at->toDateTimeString(),

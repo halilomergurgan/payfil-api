@@ -10,12 +10,12 @@ use Illuminate\Http\JsonResponse;
 class OrderController extends Controller
 {
     /**
-     * @param int $orderId
+     * @param string $uuid
      * @return JsonResponse
      */
-    public function getOrderStatus(int $orderId): JsonResponse
+    public function getOrderStatus(string $uuid): JsonResponse
     {
-        $order = Order::with('paymentLogs')->find($orderId);
+        $order = Order::with('paymentLogs')->where(['uuid' => $uuid])->first();
 
         if (!$order) {
             return response()->json(['error' => 'Order not found.'], 404);

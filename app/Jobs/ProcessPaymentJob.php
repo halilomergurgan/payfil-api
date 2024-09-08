@@ -16,6 +16,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Transaction;
 use App\Exceptions\PaymentException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProcessPaymentJob implements ShouldQueue
 {
@@ -41,8 +43,7 @@ class ProcessPaymentJob implements ShouldQueue
     {
         event(new PaymentStarted($this->orderId));
 
-        $maskedCardNumber = substr($this->paymentData['cardNumber'], -4);
-        $maskedCardNumber = '**** **** **** ' . $maskedCardNumber;
+        $maskedCardNumber = $this->maskedCardNumber($this->paymentData['cardNumber']);
 
         try {
             event(new PaymentProcessing($this->orderId));
@@ -69,7 +70,6 @@ class ProcessPaymentJob implements ShouldQueue
             ]);
 
             event(new PaymentCompleted($this->orderId));
-
         } catch (PaymentException $e) {
             event(new PaymentFailed($this->orderId));
 
@@ -90,7 +90,19 @@ class ProcessPaymentJob implements ShouldQueue
                 'response_code' => 404
             ]);
 
+            Log::error('Process Payment Job Error: '. $e->getMessage());
+
             throw $e;
         }
+    }
+
+    /**
+     * @param $maskedCardNumber
+     * @return string
+     */
+    private function maskedCardNumber($maskedCardNumber): string
+    {
+        $maskedCardNumber = substr($maskedCardNumber, -4);
+        return '**** **** **** ' . $maskedCardNumber;
     }
 }

@@ -13,7 +13,6 @@ use App\Pipelines\OrderPipeline;
 use App\Pipelines\ProcessPayment;
 use App\Pipelines\SelectBank;
 use App\Pipelines\ValidateCard;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
@@ -32,19 +31,19 @@ class PaymentController extends Controller
             $request = app(Pipeline::class)
                 ->send($paymentData)
                 ->through([
-                    OrderPipeline::class,
                     ValidateCard::class,
                     SelectBank::class,
+                    OrderPipeline::class,
                     ProcessPayment::class,
                 ])
                 ->thenReturn();
 
             ProcessPaymentJob::dispatch($paymentData, $request['provider'], auth()->user(), $request['order_id']);
 
-            return response()->json(['message' => 'Payment processing started.', 'order_id' => $request['order_id']]);
+            return response()->json(['message' => 'Payment processing started.', 'order_id' => $request['uuid']]);
         } catch (ValidateCardException|PaymentException $e) {
             return $e->render($request);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error($e->getMessage());
 
             return response()->json(['error' => 'Something went wrong.'], 500);

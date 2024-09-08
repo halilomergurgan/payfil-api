@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -21,6 +22,7 @@ class Order extends Model
         'user_id',
         'status',
         'total_amount',
+        'uuid'
     ];
 
     /**
@@ -47,5 +49,14 @@ class Order extends Model
     public function paymentLogs(): HasMany
     {
         return $this->hasMany(PaymentLog::class, 'order_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->uuid = Str::uuid();
+        });
     }
 }

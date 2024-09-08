@@ -22,7 +22,7 @@ class OrderTest extends BaseTest
             'logged_at' => now(),
         ]);
 
-        $response = $this->apiGet("/order-status/{$order->id}");
+        $response = $this->apiGet("/order-status/{$order->uuid}");
 
         $response->assertStatus(200)
             ->assertJsonStructure([

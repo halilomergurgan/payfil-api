@@ -44,13 +44,4 @@ class Bank2PaymentProvider implements BankPaymentProviderInterface
             'currency' => 'USD',
         ];
     }
-
-    /**
-     * @param $cardNumber
-     * @return false|int
-     */
-    private function isValidCardNumber($cardNumber): bool|int
-    {
-        return preg_match('/^\d{16}$/', $cardNumber);
-    }
 }

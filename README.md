@@ -60,7 +60,7 @@ This script will:
 ```json
 {
     "message": "Payment processing started.",
-    "order_id": 1
+    "order_id": "5d07705d-aae6-44a3-8219-c98b68e2452e"
 }
 ```
 **422 Unprocessable Entity**: Validation error or invalid card.
@@ -74,7 +74,7 @@ This script will:
 **500 Internal Server Error**: Unexpected error during payment processing.
 
 
-### GET /api/v1/order-status/{order}
+### GET /api/v1/order-status/{uuid}
 **Description**: Retrieves the status of an order, along with the history of status changes from the payment logs.
 
 #### Response:
@@ -130,13 +130,14 @@ This script will:
 
 ### BIN Card Providers and Banks
 
-| BIN Number | Card Provider | Bank             |
-|------------|---------------|------------------|
-| 411111     | Visa          | Provider Bank 1  |
-| 411112     | Visa          | Provider Bank 1  |
-| 511111     | Mastercard    | Provider  Bank 2 |
-| 511112     | Mastercard    | Provider  Bank 2 |
-| **Others** | Various       | Provider Bank 3  |
+| BIN Number / Card Number | Card Provider | Bank             |
+|--------------------------|---------------|------------------|
+| 4111111111111111         | Visa          | Provider Bank 1  |
+| 4111121234567890         | Visa          | Provider Bank 1  |
+| 5111111111111111         | Mastercard    | Provider  Bank 2 |
+| 5111121234567890         | Mastercard    | Provider  Bank 2 |
+| 6011111111111117         | Various       | Provider Bank 3  |
+| 3530111333300000         | Various       | Provider Bank 3  |
 
 ### Other API Endpoints
 

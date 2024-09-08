@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\API\v1\Controllers\AuthController;
+use App\Http\API\v1\Controllers\OrderController;
 use App\Http\API\v1\Controllers\PaymentController;
+use App\Http\API\v1\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,8 +33,9 @@ Route::prefix('v1')->group(function () {
             Route::middleware(['throttle:10,1', 'role:admin'])->group(function () {
                 Route::post('/process-payment', [PaymentController::class, 'processPayment']);
             });
-            Route::get('transaction/{transaction}', [PaymentController::class, 'transaction']);
-            Route::get('transactions', [PaymentController::class, 'transactions']);
+            route::get('/order-status/{order}', [OrderController::class, 'getOrderStatus']);
+            Route::get('transaction/{transaction}', [TransactionController::class, 'transaction']);
+            Route::get('transactions', [TransactionController::class, 'transactions']);
         });
     });
 });

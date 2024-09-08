@@ -20,7 +20,11 @@ use Illuminate\Pipeline\Pipeline;
 
 class PaymentController extends Controller
 {
-    public function processPayment(ProcessPaymentRequest $request)
+    /**
+     * @param ProcessPaymentRequest $request
+     * @return JsonResponse
+     */
+    public function processPayment(ProcessPaymentRequest $request): JsonResponse
     {
         $paymentData = $request->validated();
 
@@ -37,7 +41,7 @@ class PaymentController extends Controller
 
             ProcessPaymentJob::dispatch($paymentData, $request['provider'], auth()->user(), $request['order_id']);
 
-            return response()->json(['message' => 'Payment processing started.']);
+            return response()->json(['message' => 'Payment processing started.', 'transaction_id' => $request['order_id']]);
         } catch (ValidateCardException|PaymentException $e) {
             return $e->render($request);
         } catch (\Exception $e) {
@@ -45,33 +49,5 @@ class PaymentController extends Controller
 
             return response()->json(['error' => 'Something went wrong.'], 500);
         }
-    }
-
-    /**
-     * @param Transaction $transaction
-     * @return JsonResponse
-     * @throws AuthorizationException
-     */
-    public function transaction(Transaction $transaction): JsonResponse
-    {
-        $this->authorize('view', $transaction);
-
-        $transaction->load('order.products');
-
-        return response()->json(new TransactionResource($transaction));
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws AuthorizationException
-     */
-    public function transactions(Request $request): JsonResponse
-    {
-        $this->authorize('viewAny', Transaction::class);
-
-        $transactions = Transaction::where('user_id', $request->user()->id)->with('order.products')->get();
-
-        return response()->json(TransactionResource::collection($transactions));
     }
 }

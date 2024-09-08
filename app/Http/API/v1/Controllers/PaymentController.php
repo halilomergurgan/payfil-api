@@ -41,7 +41,7 @@ class PaymentController extends Controller
 
             ProcessPaymentJob::dispatch($paymentData, $request['provider'], auth()->user(), $request['order_id']);
 
-            return response()->json(['message' => 'Payment processing started.', 'transaction_id' => $request['order_id']]);
+            return response()->json(['message' => 'Payment processing started.', 'order_id' => $request['order_id']]);
         } catch (ValidateCardException|PaymentException $e) {
             return $e->render($request);
         } catch (\Exception $e) {

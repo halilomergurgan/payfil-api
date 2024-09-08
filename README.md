@@ -59,7 +59,8 @@ This script will:
 
 ```json
 {
-    "message": "Payment processing started."
+    "message": "Payment processing started.",
+    "order_id": 1
 }
 ```
 **422 Unprocessable Entity**: Validation error or invalid card.
@@ -71,6 +72,47 @@ This script will:
 ```
 
 **500 Internal Server Error**: Unexpected error during payment processing.
+
+
+### GET /api/v1/order-status/{order}
+**Description**: Retrieves the status of an order, along with the history of status changes from the payment logs.
+
+#### Response:
+
+**200 OK**: Order status and logs returned successfully..
+
+```json
+{
+    "order_id": 1,
+    "user_id": 1,
+    "status": "completed",
+    "total_amount": "817.17",
+    "created_at": "2024-09-08 07:53:05",
+    "logs": [
+        {
+            "status": "pending",
+            "logged_at": "2024-09-08 08:03:23"
+        },
+        {
+            "status": "processing",
+            "logged_at": "2024-09-08 08:03:23"
+        },
+        {
+            "status": "completed",
+            "logged_at": "2024-09-08 08:03:23"
+        }
+    ]
+}
+
+```
+**404 Not Found**: Order not found or does not exist.
+
+```json
+{
+    "error": "Order not found."
+}
+```
+
 
 ### Valid Card Numbers
 

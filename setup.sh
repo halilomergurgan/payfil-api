@@ -2,11 +2,30 @@
 
 echo "Setting up the project with Docker Sail..."
 
-echo "Starting Docker containers..."
-./vendor/bin/sail up -d
+if [ ! -d "vendor" ]; then
+    echo "Installing Composer dependencies using Docker..."
+    docker run --rm \
+        -u "$(id -u):$(id -g)" \
+        -v $(pwd):/var/www/html \
+        -w /var/www/html \
+        laravelsail/php83-composer:latest \
+        composer install --no-dev --prefer-dist --optimize-autoloader
+else
+    echo "Vendor folder already exists, skipping Composer install."
+fi
 
-echo "Installing composer dependencies..."
-./vendor/bin/sail composer install --no-interaction --prefer-dist --optimize-autoloader
+if [ ! -f "vendor/bin/sail" ]; then
+    echo "Sail not found. Installing Sail dependencies..."
+    docker run --rm \
+        -u "$(id -u):$(id -g)" \
+        -v $(pwd):/var/www/html \
+        -w /var/www/html \
+        laravelsail/php83-composer:latest \
+        composer require laravel/sail --dev
+fi
+
+echo "Starting Docker containers"
+./vendor/bin/sail up -d
 
 if [ ! -f .env ]; then
     echo "Creating .env file..."

@@ -205,7 +205,7 @@ The project includes a suite of tests for validating the payment process and use
 The following technologies were used in this project:
 
 - **Laravel 10**: PHP framework for building the API and handling application logic.
-- **PHP 8.2**: The programming language powering the backend.
+- **PHP 8.3**: The programming language powering the backend.
 - **Docker with Laravel Sail**: A lightweight command-line interface for interacting with Docker.
 - **MySQL**: The database used to store transaction, user, and product data.
 - **Redis**: Used for managing queues and caching.

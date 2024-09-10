@@ -5,13 +5,13 @@ echo "Setting up the project with Docker Sail..."
 if [ ! -f .env ]; then
     echo "Creating .env file..."
     cp .env.example .env
-    echo "REDIS_HOST=redis" >> .env
-    echo "DB_CONNECTION=mysql" >> .env
-    echo "DB_HOST=mysql" >> .env
-    echo "DB_PORT=3306" >> .env
-    echo "DB_DATABASE=laravel" >> .env
-    echo "DB_USERNAME=sail" >> .env
-    echo "DB_PASSWORD=password" >> .env
+    sed -i '' 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+    sed -i '' 's/DB_HOST=.*/DB_HOST=mysql/' .env
+    sed -i '' 's/DB_PORT=.*/DB_PORT=3306/' .env
+    sed -i '' 's/DB_DATABASE=.*/DB_DATABASE=laravel/' .env
+    sed -i '' 's/DB_USERNAME=.*/DB_USERNAME=sail/' .env
+    sed -i '' 's/DB_PASSWORD=.*/DB_PASSWORD=password/' .env
+    sed -i '' 's/REDIS_HOST=.*/REDIS_HOST=redis/' .env
 fi
 
 if [ ! -d "vendor" ]; then

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
@@ -44,6 +45,12 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof NotFoundHttpException) {
+            return response()->json([
+                'error' => 'The requested resource was not found.',
+            ], 404);
+        }
+
+        if ($exception instanceof ModelNotFoundException) {
             return response()->json([
                 'error' => 'The requested resource was not found.',
             ], 404);
